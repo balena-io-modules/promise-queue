@@ -1,0 +1,1 @@
+This module allows you to queue sync/async functions with max concurrency, max size, max-age, and fifo/lifo ordering"
