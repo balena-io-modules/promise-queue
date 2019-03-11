@@ -24,6 +24,7 @@
     "url": "https://github.com/balena-io-modules/promise-queue/issues"
   },
   "dependencies": {
+    "eventemitter3": "^3.1.0",
     "typed-error": "^3.0.2"
   },
   "devDependencies": {
