@@ -1,6 +1,6 @@
 {
   "name": "@balena/promise-queue",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Queue sync or async functions with max concurrency, max size, max age, and fifo/lifo ordering",
   "author": "Pagan Gazzard <page@balena.io>",
   "main": "out/index.js",
