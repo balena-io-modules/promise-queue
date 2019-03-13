@@ -1,8 +1,14 @@
 import { TypedError } from 'typed-error';
+import * as EventEmitter from 'eventemitter3';
 
 export class PromiseQueueError extends TypedError {}
 export class MaxSizeExceededError extends PromiseQueueError {}
 export class TimeoutError extends PromiseQueueError {}
+
+const durationSince = (t0: ReturnType<typeof process.hrtime>): number => {
+	const diff = process.hrtime(t0);
+	return diff[0] * 1000 + diff[1] / 1e6;
+};
 
 export class PromiseQueue {
 	private next: 'pop' | 'shift';
@@ -12,6 +18,7 @@ export class PromiseQueue {
 	private maxSize: number;
 	private maxAge: number;
 	private order: 'fifo' | 'lifo';
+	public metrics: EventEmitter = new EventEmitter();
 
 	constructor({
 		concurrency = 1,
@@ -56,8 +63,14 @@ export class PromiseQueue {
 	}
 	public add<T>(fn: () => T | PromiseLike<T>): Promise<T> {
 		return new Promise<T>((resolve, reject) => {
+			this.metrics.emit('arrival');
+			this.metrics.emit('queueLength', this.queue.length);
+			this.metrics.emit('inFlight', this.inFlight);
+			const enqueueTime = process.hrtime();
+
 			if (this.queue.length >= this.maxSize) {
 				const err = new MaxSizeExceededError();
+				this.metrics.emit('rejection');
 				if (this.order === 'lifo') {
 					const evictedFn = this.queue.shift()!;
 					// Make sure the evicted request receives the correct error to respond with
@@ -71,7 +84,9 @@ export class PromiseQueue {
 
 			let timeout: ReturnType<typeof setTimeout> | undefined;
 			const wrappedFn = async (e?: Error) => {
+				const serviceStartTime = process.hrtime();
 				try {
+					this.metrics.emit('queueTime', durationSince(enqueueTime));
 					if (timeout) {
 						clearTimeout(timeout);
 					}
@@ -79,16 +94,23 @@ export class PromiseQueue {
 						reject(e);
 						return;
 					}
+					this.metrics.emit('dequeue');
 					const result = await fn();
 					resolve(result);
 				} catch (e) {
 					reject(e);
+				} finally {
+					this.metrics.emit('serviceTime', durationSince(serviceStartTime));
+					this.metrics.emit('latency', durationSince(enqueueTime));
+					this.metrics.emit('completion');
 				}
 			};
 
 			this.queue.push(wrappedFn);
+			this.metrics.emit('enqueue');
 			if (this.maxAge > 0 && this.maxAge < Infinity) {
 				timeout = setTimeout(() => {
+					this.metrics.emit('timeout');
 					// We should be able to rely on this `indexOf` being fast regardless
 					// of queue size since the oldest entries will be towards the start of the queue
 					const index = this.queue.indexOf(wrappedFn);
