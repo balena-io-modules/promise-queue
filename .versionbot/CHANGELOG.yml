@@ -1,0 +1,39 @@
+- commits:
+  - author: dt-rush
+    body: ""
+    footers:
+      change-type: minor
+      connects-to: '#6'
+      signed-off-by: Nick Payne <nickp@balena.io>
+    hash: a7b4eda7739df2fcbe8c6ebe179655d95d36cd46
+    subject: made queueLength and inFlight metrics more reliable/useful
+  date: "2019-05-08T16:56:07Z"
+  version: 1.2.0
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: patch
+    hash: 1164046db5ef9e72745e0085e9b5b1224a1cf135
+    subject: Switch to a `setInterval` for enforcing maxAge for better performance
+  date: "2019-04-12T13:33:07Z"
+  version: 1.1.1
+- commits:
+  - author: dt-rush
+    body: ""
+    footers:
+      change-type: minor
+      signed-off-by: Nick Payne <nickp@balena.io>
+    hash: 7ab24f81e0e68cf7436a4e1206132f90b710e332
+    subject: expose metrics via EventEmitter
+  date: "2019-03-13T19:31:18Z"
+  version: 1.1.0
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: major
+    hash: 78071037d732c1a79a70eede5077266d343f36e9
+    subject: Initial release
+  date: "2019-03-08T10:15:02Z"
+  version: 1.0.0
