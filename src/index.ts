@@ -14,7 +14,7 @@ export class PromiseQueue {
 	private next: 'pop' | 'shift';
 	private queue: Array<
 		((err?: Error) => Promise<void>) & {
-			enqueueTime: ReturnType<typeof process.hrtime>;
+			arrivalTime: ReturnType<typeof process.hrtime>;
 		}
 	> = [];
 	private inFlight = 0;
@@ -62,7 +62,7 @@ export class PromiseQueue {
 				timeoutSeconds += maxAgeSeconds;
 
 				const firstValid = this.queue.findIndex(
-					({ enqueueTime }) => enqueueTime[0] > timeoutSeconds,
+					({ arrivalTime }) => arrivalTime[0] > timeoutSeconds,
 				);
 
 				if (firstValid === 0) {
@@ -70,6 +70,7 @@ export class PromiseQueue {
 				}
 
 				const timedOutFns = this.queue.splice(0, firstValid);
+				this.metrics.emit('queueLength', this.queue.length);
 				const timeoutError = new TimeoutError();
 				timedOutFns.forEach(timedOutFn => {
 					this.metrics.emit('timeout');
@@ -81,10 +82,12 @@ export class PromiseQueue {
 	private run() {
 		const runNext = () => {
 			this.inFlight--;
+			this.metrics.emit('inFlight', this.inFlight);
 			this.run();
 		};
 		while (this.inFlight < this.concurrency && this.queue.length > 0) {
 			this.inFlight++;
+			this.metrics.emit('inFlight', this.inFlight);
 			const fn = this.queue[this.next]()!;
 			fn().then(runNext, runNext);
 		}
@@ -92,15 +95,14 @@ export class PromiseQueue {
 	public add<T>(fn: () => T | PromiseLike<T>): Promise<T> {
 		return new Promise<T>((resolve, reject) => {
 			this.metrics.emit('arrival');
-			this.metrics.emit('queueLength', this.queue.length);
-			this.metrics.emit('inFlight', this.inFlight);
-			const enqueueTime = process.hrtime();
+			const arrivalTime = process.hrtime();
 
 			if (this.queue.length >= this.maxSize) {
 				const err = new MaxSizeExceededError();
 				this.metrics.emit('rejection');
 				if (this.order === 'lifo') {
 					const evictedFn = this.queue.shift()!;
+					this.metrics.emit('queueLength', this.queue.length);
 					// Make sure the evicted request receives the correct error to respond with
 					evictedFn(err);
 				} else {
@@ -113,7 +115,7 @@ export class PromiseQueue {
 			const wrappedFn = async (e?: Error) => {
 				const serviceStartTime = process.hrtime();
 				try {
-					this.metrics.emit('queueTime', durationSince(enqueueTime));
+					this.metrics.emit('queueTime', durationSince(arrivalTime));
 					if (e) {
 						reject(e);
 						return;
@@ -125,14 +127,15 @@ export class PromiseQueue {
 					reject(e);
 				} finally {
 					this.metrics.emit('serviceTime', durationSince(serviceStartTime));
-					this.metrics.emit('latency', durationSince(enqueueTime));
+					this.metrics.emit('latency', durationSince(arrivalTime));
 					this.metrics.emit('completion');
 				}
 			};
-			wrappedFn.enqueueTime = enqueueTime;
+			wrappedFn.arrivalTime = arrivalTime;
 
 			this.queue.push(wrappedFn);
 			this.metrics.emit('enqueue');
+			this.metrics.emit('queueLength', this.queue.length);
 			this.run();
 		});
 	}
