@@ -1,4 +1,16 @@
 - commits:
+    - subject: use process.hrtime.bigint
+      hash: 7ba48d856386d12fa06ecaf3ca2a4ec81f9ec962
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Nick Payne <nickp@balena.io>
+        signed-off-by: Nick Payne <nickp@balena.io>
+      author: dt-rush
+  version: 1.2.2
+  date: 2019-06-05T20:33:32.436Z
+- commits:
     - subject: Add .versionbot/CHANGELOG.yml for downstream changelogs
       hash: 52a2cbbe9c7fe966c72f69b39199e69657b4a6de
       body: ''
