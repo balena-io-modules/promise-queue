@@ -5,16 +5,16 @@ export class PromiseQueueError extends TypedError {}
 export class MaxSizeExceededError extends PromiseQueueError {}
 export class TimeoutError extends PromiseQueueError {}
 
-const durationSince = (t0: ReturnType<typeof process.hrtime>): number => {
-	const diff = process.hrtime(t0);
-	return diff[0] * 1000 + diff[1] / 1e6;
+// duration in bigint nanoseconds since t0
+const durationSince = (t0: bigint): bigint => {
+	return process.hrtime.bigint() - t0;
 };
 
 export class PromiseQueue {
 	private next: 'pop' | 'shift';
 	private queue: Array<
 		((err?: Error) => Promise<void>) & {
-			arrivalTime: ReturnType<typeof process.hrtime>;
+			arrivalTime: ReturnType<typeof process.hrtime.bigint>;
 		}
 	> = [];
 	private inFlight = 0;
@@ -58,11 +58,10 @@ export class PromiseQueue {
 				if (this.queue.length === 0) {
 					return;
 				}
-				let [timeoutSeconds] = process.hrtime();
-				timeoutSeconds += maxAgeSeconds;
-
+				let timeoutNano = process.hrtime.bigint();
+				timeoutNano += BigInt(maxAgeSeconds * 1e9);
 				const firstValid = this.queue.findIndex(
-					({ arrivalTime }) => arrivalTime[0] > timeoutSeconds,
+					({ arrivalTime }) => arrivalTime > timeoutNano,
 				);
 
 				if (firstValid === 0) {
@@ -95,7 +94,7 @@ export class PromiseQueue {
 	public add<T>(fn: () => T | PromiseLike<T>): Promise<T> {
 		return new Promise<T>((resolve, reject) => {
 			this.metrics.emit('arrival');
-			const arrivalTime = process.hrtime();
+			const arrivalTime = process.hrtime.bigint();
 
 			if (this.queue.length >= this.maxSize) {
 				const err = new MaxSizeExceededError();
@@ -113,7 +112,7 @@ export class PromiseQueue {
 			}
 
 			const wrappedFn = async (e?: Error) => {
-				const serviceStartTime = process.hrtime();
+				const serviceStartTime = process.hrtime.bigint();
 				try {
 					this.metrics.emit('queueTime', durationSince(arrivalTime));
 					if (e) {
