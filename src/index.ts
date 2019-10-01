@@ -140,17 +140,25 @@ export class PromiseQueue {
 	}
 }
 
-export const createKeyedPromiseQueue = (
+export interface KeyedPromiseQueue {
+	<T>(key: string, fn: () => T | PromiseLike<T>): Promise<T>;
+	queuesByKey: { [key: string]: PromiseQueue };
+}
+
+export function createKeyedPromiseQueue(
 	...args: ConstructorParameters<typeof PromiseQueue>
-) => {
+): KeyedPromiseQueue {
 	const queues: {
 		[key: string]: PromiseQueue;
 	} = {};
 
-	return <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
+	const fn = <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
 		if (queues[key] == null) {
 			queues[key] = new PromiseQueue(...args);
 		}
 		return queues[key].add(fn);
 	};
-};
+
+	fn.queuesByKey = queues;
+	return fn;
+}
