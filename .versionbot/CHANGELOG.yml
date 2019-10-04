@@ -1,4 +1,14 @@
 - commits:
+    - subject: Revert use of bigint which changed the type of the emitted queueTime
+      hash: 7b72193829f0d9214ef68205d668944eab9df9d6
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.2.4
+  date: 2019-10-04T20:48:46.074Z
+- commits:
     - subject: Remove all queued items if none are valid
       hash: f34eb44ab9c3e6eaf472487744d8bca34ac09a13
       body: ''
