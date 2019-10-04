@@ -60,12 +60,17 @@ export class PromiseQueue {
 				}
 				let timeoutNano = process.hrtime.bigint();
 				timeoutNano += BigInt(maxAgeSeconds * 1e9);
-				const firstValid = this.queue.findIndex(
+				let firstValid = this.queue.findIndex(
 					({ arrivalTime }) => arrivalTime > timeoutNano,
 				);
 
 				if (firstValid === 0) {
 					return;
+				}
+
+				if (firstValid === -1) {
+					// If there are no valid entries then we remove them all
+					firstValid = this.queue.length;
 				}
 
 				const timedOutFns = this.queue.splice(0, firstValid);
