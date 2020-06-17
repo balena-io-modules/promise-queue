@@ -78,7 +78,7 @@ export class PromiseQueue {
 				this.metrics.emit('queueLength', this.queue.length);
 				const timeoutError = new TimeoutError();
 				this.metrics.emit('timeout', timedOutFns.length);
-				timedOutFns.forEach(timedOutFn => {
+				timedOutFns.forEach((timedOutFn) => {
 					timedOutFn(timeoutError);
 				});
 			}, 1000);

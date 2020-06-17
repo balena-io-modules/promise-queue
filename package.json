@@ -11,9 +11,9 @@
     "prepublishOnly": "npm run lint",
     "prepare": "npm run build",
     "build": "npx tsc",
-    "lint": "resin-lint --typescript src/ && tsc --noEmit",
+    "lint": "balena-lint --typescript src/ && tsc --noEmit",
     "test": "npm run lint",
-    "prettify": "prettier --config ./node_modules/resin-lint/config/.prettierrc --write \"src/**/*.ts\""
+    "prettify": "balena-lint --typescript --fix src/"
   },
   "homepage": "https://github.com/balena-io-modules/promise-queue",
   "repository": {
@@ -24,16 +24,16 @@
     "url": "https://github.com/balena-io-modules/promise-queue/issues"
   },
   "dependencies": {
-    "eventemitter3": "^3.1.0",
-    "typed-error": "^3.1.0"
+    "eventemitter3": "^4.0.4",
+    "typed-error": "^3.2.0"
   },
   "devDependencies": {
-    "@types/node": "^10.13.0",
-    "husky": "^1.3.1",
-    "lint-staged": "^8.1.5",
+    "@balena/lint": "^5.1.0",
+    "@types/node": "^10.17.26",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
     "require-npm4-to-publish": "^1.0.0",
-    "resin-lint": "^2.0.1",
-    "typescript": "^3.4.3"
+    "typescript": "^3.9.5"
   },
   "husky": {
     "hooks": {
@@ -43,9 +43,7 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
-      "resin-lint --typescript",
-      "git add"
+      "balena-lint --typescript --fix"
     ]
   }
 }
