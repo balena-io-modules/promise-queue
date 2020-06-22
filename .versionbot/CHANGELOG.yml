@@ -1,4 +1,14 @@
 - commits:
+    - subject: Update dependencies
+      hash: 9f367d50fb063d6bd6b7431d87510dbf1f8a7eaf
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.1
+  date: 2020-06-17T20:36:26.388Z
+- commits:
     - subject: emit a single metric event for mass timeouts
       hash: b1e64f5f70a23cc94707c971e0a0bb4d58e9fe96
       body: ''
