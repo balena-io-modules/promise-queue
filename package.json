@@ -11,9 +11,9 @@
     "prepublishOnly": "npm run lint",
     "prepare": "npm run build",
     "build": "npx tsc",
-    "lint": "balena-lint --typescript src/ && tsc --noEmit",
+    "lint": "balena-lint src/ && tsc --noEmit",
     "test": "npm run lint",
-    "prettify": "balena-lint --typescript --fix src/"
+    "prettify": "balena-lint --fix src/"
   },
   "homepage": "https://github.com/balena-io-modules/promise-queue",
   "repository": {
@@ -24,16 +24,16 @@
     "url": "https://github.com/balena-io-modules/promise-queue/issues"
   },
   "dependencies": {
-    "eventemitter3": "^4.0.4",
-    "typed-error": "^3.2.0"
+    "eventemitter3": "^4.0.7",
+    "typed-error": "^3.2.1"
   },
   "devDependencies": {
-    "@balena/lint": "^5.1.0",
-    "@types/node": "^10.17.26",
-    "husky": "^4.2.5",
-    "lint-staged": "^10.2.11",
+    "@balena/lint": "^6.1.1",
+    "@types/node": "^10.17.60",
+    "husky": "^4.3.8",
+    "lint-staged": "^11.2.3",
     "require-npm4-to-publish": "^1.0.0",
-    "typescript": "^3.9.5"
+    "typescript": "^4.4.4"
   },
   "husky": {
     "hooks": {
@@ -43,7 +43,7 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "balena-lint --typescript --fix"
+      "balena-lint --fix"
     ]
   }
 }

@@ -3,15 +3,14 @@
 		"module": "commonjs",
 		"target": "es2017",
 		"outDir": "out",
+		"strict": true,
 		"declaration": true,
-		"noImplicitAny": true,
 		"noUnusedParameters": true,
 		"noUnusedLocals": true,
 		"preserveConstEnums": true,
 		"removeComments": true,
 		"resolveJsonModule": true,
 		"sourceMap": true,
-		"strictNullChecks": true,
 		"skipLibCheck": true
 	},
 	"include": [
