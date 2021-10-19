@@ -59,7 +59,7 @@ export class PromiseQueue {
 					return;
 				}
 				let [timeoutSeconds] = process.hrtime();
-				timeoutSeconds += maxAgeSeconds;
+				timeoutSeconds -= maxAgeSeconds;
 
 				let firstValid = this.queue.findIndex(
 					({ arrivalTime }) => arrivalTime[0] > timeoutSeconds,
