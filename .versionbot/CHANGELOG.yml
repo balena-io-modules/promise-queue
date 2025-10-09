@@ -1,7 +1,18 @@
 - commits:
+    - subject: Update eventemitter3 to 5.x
+      hash: f63f3c3b8af41502724d10028b1eb324f5d3f4e1
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.3
+  title: ""
+  date: 2025-10-09T12:37:27.287Z
+- commits:
     - subject: Fix checking for timed out items
       hash: d88adf26c1f53c5e2064879f37baa4a5c5ba9e02
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -11,7 +22,7 @@
 - commits:
     - subject: Update dependencies
       hash: 9f367d50fb063d6bd6b7431d87510dbf1f8a7eaf
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -21,7 +32,7 @@
 - commits:
     - subject: emit a single metric event for mass timeouts
       hash: b1e64f5f70a23cc94707c971e0a0bb4d58e9fe96
-      body: ''
+      body: ""
       footer:
         Change-type: minor
         change-type: minor
@@ -33,7 +44,7 @@
 - commits:
     - subject: Revert use of bigint which changed the type of the emitted queueTime
       hash: 7b72193829f0d9214ef68205d668944eab9df9d6
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -43,7 +54,7 @@
 - commits:
     - subject: Remove all queued items if none are valid
       hash: f34eb44ab9c3e6eaf472487744d8bca34ac09a13
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -53,7 +64,7 @@
 - commits:
     - subject: use process.hrtime.bigint
       hash: 7ba48d856386d12fa06ecaf3ca2a4ec81f9ec962
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -65,7 +76,7 @@
 - commits:
     - subject: Add .versionbot/CHANGELOG.yml for downstream changelogs
       hash: 52a2cbbe9c7fe966c72f69b39199e69657b4a6de
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -74,40 +85,40 @@
   date: 2019-05-09T14:00:31.452Z
 - commits:
     - author: dt-rush
-      body: ''
+      body: ""
       footers:
         change-type: minor
-        connects-to: '#6'
+        connects-to: "#6"
         signed-off-by: Nick Payne <nickp@balena.io>
       hash: a7b4eda7739df2fcbe8c6ebe179655d95d36cd46
       subject: made queueLength and inFlight metrics more reliable/useful
-  date: '2019-05-08T16:56:07Z'
+  date: 2019-05-08T16:56:07Z
   version: 1.2.0
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 1164046db5ef9e72745e0085e9b5b1224a1cf135
       subject: Switch to a `setInterval` for enforcing maxAge for better performance
-  date: '2019-04-12T13:33:07Z'
+  date: 2019-04-12T13:33:07Z
   version: 1.1.1
 - commits:
     - author: dt-rush
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Nick Payne <nickp@balena.io>
       hash: 7ab24f81e0e68cf7436a4e1206132f90b710e332
       subject: expose metrics via EventEmitter
-  date: '2019-03-13T19:31:18Z'
+  date: 2019-03-13T19:31:18Z
   version: 1.1.0
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: major
       hash: 78071037d732c1a79a70eede5077266d343f36e9
       subject: Initial release
-  date: '2019-03-08T10:15:02Z'
+  date: 2019-03-08T10:15:02Z
   version: 1.0.0
