@@ -1,5 +1,5 @@
 import { TypedError } from 'typed-error';
-import * as EventEmitter from 'eventemitter3';
+import { EventEmitter } from 'eventemitter3';
 
 export class PromiseQueueError extends TypedError {}
 export class MaxSizeExceededError extends PromiseQueueError {}
@@ -21,7 +21,7 @@ export class PromiseQueue {
 	private concurrency: number;
 	private maxSize: number;
 	private order: 'fifo' | 'lifo';
-	public metrics: EventEmitter = new EventEmitter();
+	public metrics = new EventEmitter();
 
 	constructor({
 		concurrency = 1,
