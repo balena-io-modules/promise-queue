@@ -7,13 +7,12 @@
   "license": "Apache-2.0",
   "types": "out/index.d.ts",
   "scripts": {
-    "prepublish": "require-npm4-to-publish",
-    "prepublishOnly": "npm run lint",
-    "prepare": "npm run build",
+    "prepack": "npm run build",
+    "prepare": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
     "build": "npx tsc",
     "lint": "balena-lint src/ && tsc --noEmit",
     "test": "npm run lint",
-    "prettify": "balena-lint --fix src/"
+    "lint-fix": "balena-lint --fix src/"
   },
   "homepage": "https://github.com/balena-io-modules/promise-queue",
   "repository": {
@@ -24,25 +23,18 @@
     "url": "https://github.com/balena-io-modules/promise-queue/issues"
   },
   "dependencies": {
-    "eventemitter3": "^4.0.7",
+    "eventemitter3": "^5.0.1",
     "typed-error": "^3.2.1"
   },
   "devDependencies": {
-    "@balena/lint": "^6.1.1",
+    "@balena/lint": "^9.3.8",
     "@types/node": "^10.17.60",
-    "husky": "^4.3.8",
-    "lint-staged": "^11.2.3",
-    "require-npm4-to-publish": "^1.0.0",
-    "typescript": "^4.4.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run lint"
-    }
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
+    "typescript": "^5.9.3"
   },
   "lint-staged": {
-    "src/**/*.ts": [
+    "*.ts": [
       "balena-lint --fix"
     ]
   },

@@ -1,5 +1,5 @@
 import { TypedError } from 'typed-error';
-import * as EventEmitter from 'eventemitter3';
+import { EventEmitter } from 'eventemitter3';
 
 export class PromiseQueueError extends TypedError {}
 export class MaxSizeExceededError extends PromiseQueueError {}
@@ -21,7 +21,7 @@ export class PromiseQueue {
 	private concurrency: number;
 	private maxSize: number;
 	private order: 'fifo' | 'lifo';
-	public metrics: EventEmitter = new EventEmitter();
+	public metrics = new EventEmitter();
 
 	constructor({
 		concurrency = 1,
@@ -79,7 +79,7 @@ export class PromiseQueue {
 				const timeoutError = new TimeoutError();
 				this.metrics.emit('timeout', timedOutFns.length);
 				timedOutFns.forEach((timedOutFn) => {
-					timedOutFn(timeoutError);
+					void timedOutFn(timeoutError);
 				});
 			}, 1000);
 		}
@@ -109,7 +109,7 @@ export class PromiseQueue {
 					const evictedFn = this.queue.shift()!;
 					this.metrics.emit('queueLength', this.queue.length);
 					// Make sure the evicted request receives the correct error to respond with
-					evictedFn(err);
+					void evictedFn(err);
 				} else {
 					// If we're in fifo (default) mode we can skip wrapping/adding the fn altogether
 					reject(err);
@@ -128,8 +128,8 @@ export class PromiseQueue {
 					this.metrics.emit('dequeue');
 					const result = await fn();
 					resolve(result);
-				} catch (e) {
-					reject(e);
+				} catch (err) {
+					reject(err as Error);
 				} finally {
 					this.metrics.emit('serviceTime', durationSince(serviceStartTime));
 					this.metrics.emit('latency', durationSince(arrivalTime));
@@ -154,9 +154,7 @@ export const createKeyedPromiseQueue = (
 	} = {};
 
 	return <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
-		if (queues[key] == null) {
-			queues[key] = new PromiseQueue(...args);
-		}
+		queues[key] ??= new PromiseQueue(...args);
 		return queues[key].add(fn);
 	};
 };
