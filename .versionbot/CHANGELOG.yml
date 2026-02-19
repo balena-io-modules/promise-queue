@@ -1,4 +1,17 @@
 - commits:
+    - subject: "Add id-token: write permission for NPM OIDC publishing"
+      hash: bb664a536c68c02e7d56bed54241c18a98a1510d
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+  version: 1.3.4
+  title: ""
+  date: 2026-02-19T01:53:31.021Z
+- commits:
     - subject: Update eventemitter3 to 5.x
       hash: f63f3c3b8af41502724d10028b1eb324f5d3f4e1
       body: ""
