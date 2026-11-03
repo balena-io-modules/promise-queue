@@ -129,6 +129,7 @@ export class PromiseQueue {
 					const result = await fn();
 					resolve(result);
 				} catch (err) {
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 					reject(err as Error);
 				} finally {
 					this.metrics.emit('serviceTime', durationSince(serviceStartTime));

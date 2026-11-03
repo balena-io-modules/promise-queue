@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "es2017",
+		"rootDir": "src",
 		"outDir": "out",
 		"strict": true,
 		"declaration": true,
@@ -11,7 +12,10 @@
 		"removeComments": true,
 		"resolveJsonModule": true,
 		"sourceMap": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"types": [
+			"node"
+		]
 	},
 	"include": [
 		"src/**/*.ts"

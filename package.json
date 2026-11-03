@@ -23,15 +23,15 @@
     "url": "https://github.com/balena-io-modules/promise-queue/issues"
   },
   "dependencies": {
-    "eventemitter3": "^5.0.1",
-    "typed-error": "^3.2.1"
+    "eventemitter3": "^5.0.4",
+    "typed-error": "^3.2.3"
   },
   "devDependencies": {
-    "@balena/lint": "^9.3.8",
+    "@balena/lint": "^11.0.1",
     "@types/node": "^10.17.60",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.3",
-    "typescript": "^5.9.3"
+    "lint-staged": "^17.6.0",
+    "typescript": "^6.0.3"
   },
   "lint-staged": {
     "*.ts": [
