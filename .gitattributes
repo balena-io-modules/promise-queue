@@ -1,0 +1,2 @@
+# Husky hooks are shell scripts: CRLF checkouts (eg Windows git with core.autocrlf=true) break them
+/.husky/* text eol=lf
