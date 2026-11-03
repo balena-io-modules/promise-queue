@@ -54,4 +54,4 @@ export function middleware(
 - `latency`, data: `number`: sum of queueTime and serviceTime on completion
 
 - `rejection`, data: `undefined`: a promise to be added is rejected because `maxSize` is already reached
-- `timeout`, data: `undefined`: a promise's latency (queue time + service time) exceeds `maxAge`, and it is rejected
+- `timeout`, data: `number`: the number of waiting promises that exceeded `maxAge` and were rejected
