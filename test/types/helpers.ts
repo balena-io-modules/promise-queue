@@ -13,3 +13,13 @@ export type Equal<A, B> =
 		? true
 		: false;
 export type Expect<T extends true> = T;
+
+/**
+ * Value-level version of `Equal`, for values that only exist as eg callback
+ * parameters: `isType<number>()(value)` only compiles if `value` is exactly a
+ * `number` (not `any`)
+ */
+export const isType =
+	<T>() =>
+	<V>(value: Equal<V, T> extends true ? V : never) =>
+		value;
