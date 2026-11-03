@@ -164,12 +164,14 @@ export class PromiseQueue {
 export const createKeyedPromiseQueue = (
 	...args: ConstructorParameters<typeof PromiseQueue>
 ) => {
-	const queues: {
-		[key: string]: PromiseQueue;
-	} = {};
+	const queues = new Map<string, PromiseQueue>();
 
 	return <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
-		queues[key] ??= new PromiseQueue(...args);
-		return queues[key].add(fn);
+		let queue = queues.get(key);
+		if (queue == null) {
+			queue = new PromiseQueue(...args);
+			queues.set(key, queue);
+		}
+		return queue.add(fn);
 	};
 };
