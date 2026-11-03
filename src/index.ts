@@ -10,6 +10,27 @@ const durationSince = (t0: ReturnType<typeof process.hrtime>): number => {
 	return diff[0] * 1000 + diff[1] / 1e6;
 };
 
+export interface PromiseQueueOptions {
+	/** Max functions running at once, a non-negative integer or `Infinity`; 0 = unlimited. Default 1 */
+	concurrency?: number;
+	/**
+	 * Max functions waiting in the queue (excluding running ones), a non-negative
+	 * integer or `Infinity`; 0 = unlimited.
+	 * When full, `fifo` rejects the new function and `lifo` evicts the oldest
+	 * waiting one, both with a MaxSizeExceededError. Default 0
+	 */
+	maxSize?: number;
+	/**
+	 * Milliseconds a function may wait in the queue before being rejected with a
+	 * TimeoutError (checked once a second), an integer or `Infinity`; 0 or a
+	 * negative value disables.
+	 * Default 0
+	 */
+	maxAge?: number;
+	/** Order in which waiting functions are run. Default 'fifo' */
+	order?: 'fifo' | 'lifo';
+}
+
 export interface PromiseQueueMetricsEvents {
 	/** A function arrives at the queue (via `add`) */
 	arrival: [];
@@ -55,12 +76,7 @@ export class PromiseQueue {
 		maxSize = 0,
 		maxAge = 0,
 		order = 'fifo',
-	}: {
-		concurrency?: PromiseQueue['concurrency'];
-		maxSize?: PromiseQueue['maxSize'];
-		maxAge?: number;
-		order?: PromiseQueue['order'];
-	} = {}) {
+	}: PromiseQueueOptions = {}) {
 		// Only integers, or Infinity for no limit: rejects NaN, fractions and
 		// non-numbers such as strings from environment variables
 		const isIntegerOrInfinity = (x: unknown) =>
