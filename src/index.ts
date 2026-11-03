@@ -34,14 +34,22 @@ export class PromiseQueue {
 		maxAge?: number;
 		order?: PromiseQueue['order'];
 	} = {}) {
-		if (maxSize < 0) {
-			throw new Error('maxSize must be positive');
+		// Only integers, or Infinity for no limit: rejects NaN, fractions and
+		// non-numbers such as strings from environment variables
+		const isIntegerOrInfinity = (x: unknown) =>
+			Number.isInteger(x) || x === Infinity;
+		if (!isIntegerOrInfinity(maxSize) || maxSize < 0) {
+			throw new Error('maxSize must be a non-negative integer');
+		}
+		// A negative maxAge is accepted and, like 0, disables timeouts
+		if (!isIntegerOrInfinity(maxAge)) {
+			throw new Error('maxAge must be an integer');
 		}
 		if (maxSize === 0) {
 			maxSize = Infinity;
 		}
-		if (concurrency < 0) {
-			throw new Error('concurrency must be positive');
+		if (!isIntegerOrInfinity(concurrency) || concurrency < 0) {
+			throw new Error('concurrency must be a non-negative integer');
 		}
 		if (concurrency === 0) {
 			concurrency = Infinity;
