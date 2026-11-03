@@ -126,7 +126,10 @@ export class PromiseQueue {
 			}
 
 			const wrappedFn = async (e?: Error) => {
-				const serviceStartTime = process.hrtime();
+				// Only set once `fn` starts running: a function that never runs (timed
+				// out or evicted) only reports the time it spent waiting, without
+				// serviceTime, latency or completion
+				let serviceStartTime: ReturnType<typeof process.hrtime> | undefined;
 				try {
 					this.metrics.emit('queueTime', durationSince(arrivalTime));
 					if (e) {
@@ -134,15 +137,18 @@ export class PromiseQueue {
 						return;
 					}
 					this.metrics.emit('dequeue');
+					serviceStartTime = process.hrtime();
 					const result = await fn();
 					resolve(result);
 				} catch (err) {
 					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 					reject(err as Error);
 				} finally {
-					this.metrics.emit('serviceTime', durationSince(serviceStartTime));
-					this.metrics.emit('latency', durationSince(arrivalTime));
-					this.metrics.emit('completion');
+					if (serviceStartTime != null) {
+						this.metrics.emit('serviceTime', durationSince(serviceStartTime));
+						this.metrics.emit('latency', durationSince(arrivalTime));
+						this.metrics.emit('completion');
+					}
 				}
 			};
 			wrappedFn.arrivalTime = arrivalTime;
