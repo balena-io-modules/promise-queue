@@ -20,6 +20,8 @@ export class PromiseQueue {
 	private inFlight = 0;
 	private concurrency: number;
 	private maxSize: number;
+	private maxAgeSeconds = 0;
+	private expiryTimer?: ReturnType<typeof setInterval>;
 	private order: 'fifo' | 'lifo';
 	public metrics = new EventEmitter();
 
@@ -61,35 +63,57 @@ export class PromiseQueue {
 		this.next = order === 'lifo' ? 'pop' : 'shift';
 
 		if (maxAge > 0 && maxAge < Infinity) {
-			const maxAgeSeconds = Math.ceil(maxAge / 1000);
-			setInterval(() => {
-				if (this.queue.length === 0) {
-					return;
-				}
-				let [timeoutSeconds] = process.hrtime();
-				timeoutSeconds -= maxAgeSeconds;
+			this.maxAgeSeconds = Math.ceil(maxAge / 1000);
+		}
+	}
+	/**
+	 * Only runs while there are functions waiting in the queue, so that an idle
+	 * queue keeps neither the process alive nor itself from being collected
+	 */
+	private startExpiryTimer() {
+		if (this.maxAgeSeconds === 0 || this.expiryTimer != null) {
+			return;
+		}
+		this.expiryTimer = setInterval(() => {
+			this.expireTimedOut();
+		}, 1000);
+	}
+	private stopExpiryTimer() {
+		if (this.expiryTimer != null) {
+			clearInterval(this.expiryTimer);
+			this.expiryTimer = undefined;
+		}
+	}
+	private expireTimedOut() {
+		if (this.queue.length === 0) {
+			this.stopExpiryTimer();
+			return;
+		}
+		let [timeoutSeconds] = process.hrtime();
+		timeoutSeconds -= this.maxAgeSeconds;
 
-				let firstValid = this.queue.findIndex(
-					({ arrivalTime }) => arrivalTime[0] > timeoutSeconds,
-				);
+		let firstValid = this.queue.findIndex(
+			({ arrivalTime }) => arrivalTime[0] > timeoutSeconds,
+		);
 
-				if (firstValid === 0) {
-					return;
-				}
+		if (firstValid === 0) {
+			return;
+		}
 
-				if (firstValid === -1) {
-					// If there are no valid entries then we remove them all
-					firstValid = this.queue.length;
-				}
+		if (firstValid === -1) {
+			// If there are no valid entries then we remove them all
+			firstValid = this.queue.length;
+		}
 
-				const timedOutFns = this.queue.splice(0, firstValid);
-				this.metrics.emit('queueLength', this.queue.length);
-				const timeoutError = new TimeoutError();
-				this.metrics.emit('timeout', timedOutFns.length);
-				timedOutFns.forEach((timedOutFn) => {
-					void timedOutFn(timeoutError);
-				});
-			}, 1000);
+		const timedOutFns = this.queue.splice(0, firstValid);
+		this.metrics.emit('queueLength', this.queue.length);
+		const timeoutError = new TimeoutError();
+		this.metrics.emit('timeout', timedOutFns.length);
+		timedOutFns.forEach((timedOutFn) => {
+			void timedOutFn(timeoutError);
+		});
+		if (this.queue.length === 0) {
+			this.stopExpiryTimer();
 		}
 	}
 	private run() {
@@ -103,6 +127,9 @@ export class PromiseQueue {
 			this.metrics.emit('inFlight', this.inFlight);
 			const fn = this.queue[this.next]()!;
 			fn().then(runNext, runNext);
+		}
+		if (this.queue.length === 0) {
+			this.stopExpiryTimer();
 		}
 	}
 	public add<T>(fn: () => T | PromiseLike<T>): Promise<T> {
@@ -157,6 +184,9 @@ export class PromiseQueue {
 			this.metrics.emit('enqueue');
 			this.metrics.emit('queueLength', this.queue.length);
 			this.run();
+			if (this.queue.length > 0) {
+				this.startExpiryTimer();
+			}
 		});
 	}
 }
