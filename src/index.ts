@@ -219,14 +219,29 @@ export class PromiseQueue {
 export const createKeyedPromiseQueue = (
 	...args: ConstructorParameters<typeof PromiseQueue>
 ) => {
-	const queues = new Map<string, PromiseQueue>();
+	// Each queue is dropped once nothing is outstanding for its key, so that the
+	// map does not grow with every distinct key. `pending` counts every call made
+	// on the queue and a call only settles once its function has finished or
+	// will never run (timed out / evicted), so at 0 nothing for that key is
+	// running or waiting and a fresh queue cannot break its concurrency.
+	// (PromiseQueue's own `inFlight` can't be used: it is only decremented after
+	// the caller's promise has settled.)
+	const queues = new Map<string, { queue: PromiseQueue; pending: number }>();
 
-	return <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
-		let queue = queues.get(key);
-		if (queue == null) {
-			queue = new PromiseQueue(...args);
-			queues.set(key, queue);
+	return async <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
+		let entry = queues.get(key);
+		if (entry == null) {
+			entry = { queue: new PromiseQueue(...args), pending: 0 };
+			queues.set(key, entry);
 		}
-		return queue.add(fn);
+		entry.pending++;
+		try {
+			return await entry.queue.add(fn);
+		} finally {
+			entry.pending--;
+			if (entry.pending === 0 && queues.get(key) === entry) {
+				queues.delete(key);
+			}
+		}
 	};
 };
