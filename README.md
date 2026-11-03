@@ -43,7 +43,7 @@ export function middleware(
 `PromiseQueue.metrics` is an `EventEmitter` which emits the following events:
 
 - `arrival`, data: `undefined`: a promise arrives at the queue
-- `queueLength`, data: `number`: the length of the queue on arrival
+- `queueLength`, data: `number`: the length of the queue, emitted whenever it changes (enqueue, dequeue, eviction, timeout)
 - `inFlight`, data: `number`: the number of active promises on arrival
 
 - `dequeue`, data: `undefined`: a promise stops waiting in the queue and starts processing
