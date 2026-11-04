@@ -1,4 +1,15 @@
 - commits:
+    - subject: Update dependencies
+      hash: e0c379b96275c829f9f33a0c87707c182ceba4b4
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.5
+  title: ""
+  date: 2026-11-04T01:11:06.911Z
+- commits:
     - subject: "Add id-token: write permission for NPM OIDC publishing"
       hash: bb664a536c68c02e7d56bed54241c18a98a1510d
       body: ""
