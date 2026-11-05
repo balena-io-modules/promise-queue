@@ -10,9 +10,9 @@
     "prepack": "npm run build",
     "prepare": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
     "build": "npx tsc",
-    "lint": "balena-lint src/ && tsc --noEmit",
-    "test": "npm run lint",
-    "lint-fix": "balena-lint --fix src/"
+    "lint": "npm run build && balena-lint -t tsconfig.test.json src/ test/ && tsc --noEmit && tsc -p tsconfig.test.json",
+    "test": "npm run lint && node --test test/*.test.ts",
+    "lint-fix": "balena-lint -t tsconfig.test.json --fix src/ test/"
   },
   "homepage": "https://github.com/balena-io-modules/promise-queue",
   "repository": {
@@ -27,8 +27,10 @@
     "typed-error": "^3.2.3"
   },
   "devDependencies": {
-    "@balena/lint": "^11.0.1",
-    "@types/node": "^10.17.60",
+    "@balena/lint": "^11.1.0",
+    "@types/chai": "^5.2.3",
+    "@types/node": "^22.20.5",
+    "chai": "^6.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "typescript": "^6.0.3"
