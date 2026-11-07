@@ -1,4 +1,16 @@
 - commits:
+    - subject: Pin dependencies
+      hash: d498878739c2bc64084b73c9dbe024618553fd12
+      body: |
+        Update @types/chai
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.3.8
+  title: ""
+  date: 2026-11-07T01:13:11.310Z
+- commits:
     - subject: Add a test suite
       hash: abf7264715289aa2fe8ac9151572753b063a5b63
       body: >
