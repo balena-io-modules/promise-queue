@@ -28,12 +28,12 @@
   },
   "devDependencies": {
     "@balena/lint": "^11.1.0",
-    "@types/chai": "^5.2.3",
-    "@types/node": "^22.20.5",
-    "chai": "^6.3.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
-    "typescript": "^6.0.3"
+    "@types/chai": "5.2.3",
+    "@types/node": "22.20.5",
+    "chai": "6.3.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "typescript": "6.0.3"
   },
   "lint-staged": {
     "*.ts": [
