@@ -1,4 +1,22 @@
 - commits:
+    - subject: Only publish the build output, sources and changelog
+      hash: 398ef42010d73aee29f8f25f704fcac928451ab5
+      body: |
+        Without a `files` list npm published everything not in .gitignore,
+        including CI config, husky hooks, versionbot data, tsconfig files and
+        now the test suite. Sources are still published for the source maps.
+
+        The build script also runs `tsc` directly instead of via `npx`, which
+        would fetch the unrelated `tsc` package from the registry if typescript
+        is not installed.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.9
+  title: ""
+  date: 2026-11-13T03:59:13.501Z
+- commits:
     - subject: Pin dependencies
       hash: d498878739c2bc64084b73c9dbe024618553fd12
       body: |
