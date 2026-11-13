@@ -1,4 +1,19 @@
 - commits:
+    - subject: Check out husky hooks with LF line endings
+      hash: 2f23c7a98768582dc9891254a608b6fad80a5a8f
+      body: |
+        On a Windows checkout with CRLF line endings the pre-commit hook fails
+        when run from WSL/git bash: `sh` passes `lint-staged\r` to npx, which
+        tries to fetch a package of that name from the registry instead of
+        running the local lint-staged.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.10
+  title: ""
+  date: 2026-11-13T04:06:17.065Z
+- commits:
     - subject: Only publish the build output, sources and changelog
       hash: 398ef42010d73aee29f8f25f704fcac928451ab5
       body: |
