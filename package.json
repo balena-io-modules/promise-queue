@@ -6,10 +6,15 @@
   "main": "out/index.js",
   "license": "Apache-2.0",
   "types": "out/index.d.ts",
+  "files": [
+    "out/",
+    "src/",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "prepack": "npm run build",
     "prepare": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
-    "build": "npx tsc",
+    "build": "tsc",
     "lint": "npm run build && balena-lint -t tsconfig.test.json src/ test/ && tsc --noEmit && tsc -p tsconfig.test.json",
     "test": "npm run lint && node --test test/*.test.ts",
     "lint-fix": "balena-lint -t tsconfig.test.json --fix src/ test/"
