@@ -38,7 +38,7 @@
     "chai": "6.3.0",
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "lint-staged": {
     "*.ts": [
