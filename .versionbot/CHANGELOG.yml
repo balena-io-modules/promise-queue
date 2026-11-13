@@ -1,4 +1,25 @@
 - commits:
+    - subject: Fix createKeyedPromiseQueue with keys found on Object.prototype
+      hash: 387a78082053735248a4192bc14b4eddcc585155
+      body: |
+        The queues were stored in a plain object and created with
+        `queues[key] ??= new PromiseQueue(...)`. Keys that exist on
+        Object.prototype (`constructor`, `__proto__`, `toString`,
+        `hasOwnProperty`, `valueOf`, ...) are already non-nullish there, so no
+        queue was created and the call threw
+        `TypeError: queues[key].add is not a function`.
+
+        Store the queues in a Map instead, so that only keys that were actually
+        added are found. Keys are no longer coerced to strings, so untyped
+        callers passing `1` and `'1'` now get separate queues.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.13
+  title: ""
+  date: 2026-11-13T07:25:38.235Z
+- commits:
     - subject: Emit only `queueTime` metric for functions that never ran
       hash: d80b2adecedf24ff9f59f872d26b4500a3841a67
       body: >
