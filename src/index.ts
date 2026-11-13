@@ -10,6 +10,31 @@ const durationSince = (t0: ReturnType<typeof process.hrtime>): number => {
 	return diff[0] * 1000 + diff[1] / 1e6;
 };
 
+export interface PromiseQueueMetricsEvents {
+	/** A function arrives at the queue (via `add`) */
+	arrival: [];
+	/** A function is added to the waiting queue (not emitted when it is rejected for `maxSize` in fifo order) */
+	enqueue: [];
+	/** The length of the waiting queue after it changed (a function was enqueued, evicted or timed out) */
+	queueLength: [queueLength: number];
+	/** The number of running functions, emitted whenever it changes */
+	inFlight: [inFlight: number];
+	/** A function stops waiting in the queue and starts running */
+	dequeue: [];
+	/** Milliseconds a function spent waiting in the queue, emitted when it leaves the queue */
+	queueTime: [milliseconds: number];
+	/** Milliseconds a function spent running, emitted on completion */
+	serviceTime: [milliseconds: number];
+	/** Milliseconds from arrival to completion (queue time + service time) */
+	latency: [milliseconds: number];
+	/** A function completes processing (also emitted for functions rejected while waiting) */
+	completion: [];
+	/** A function is rejected because `maxSize` has been reached */
+	rejection: [];
+	/** The number of waiting functions rejected for exceeding `maxAge` */
+	timeout: [count: number];
+}
+
 export class PromiseQueue {
 	private next: 'pop' | 'shift';
 	private queue: Array<
@@ -21,7 +46,7 @@ export class PromiseQueue {
 	private concurrency: number;
 	private maxSize: number;
 	private order: 'fifo' | 'lifo';
-	public metrics = new EventEmitter();
+	public readonly metrics = new EventEmitter<PromiseQueueMetricsEvents>();
 
 	constructor({
 		concurrency = 1,
