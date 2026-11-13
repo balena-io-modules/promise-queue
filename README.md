@@ -47,11 +47,11 @@ export function middleware(
 - `inFlight`, data: `number`: the number of active promises on arrival
 
 - `dequeue`, data: `undefined`: a promise stops waiting in the queue and starts processing
-- `queueTime`, data: `number`: time a promise spent waiting in queue on dequeue
+- `queueTime`, data: `number`: time a promise spent waiting in queue on dequeue. Also emitted (and is the only duration emitted) for a promise that never runs because it timed out or was evicted by `maxSize` in lifo order
 
-- `completion`, data: `undefined`: a promise completes processing
-- `serviceTime`, data: `number`: time a promise spent processing on completion
-- `latency`, data: `number`: sum of queueTime and serviceTime on completion
+- `completion`, data: `undefined`: a promise completes processing (not emitted for promises that never run: timed out or evicted)
+- `serviceTime`, data: `number`: time a promise spent processing on completion (not emitted for promises that never run)
+- `latency`, data: `number`: sum of queueTime and serviceTime on completion (not emitted for promises that never run)
 
 - `rejection`, data: `undefined`: a promise to be added is rejected because `maxSize` is already reached
 - `timeout`, data: `undefined`: a promise's latency (queue time + service time) exceeds `maxAge`, and it is rejected
