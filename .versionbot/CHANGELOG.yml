@@ -1,4 +1,27 @@
 - commits:
+    - subject: Only run the maxAge timer while functions are waiting
+      hash: 4d94c5ef00fdebb3fe0f6bb424c44f4ea38c1edd
+      body: |
+        With maxAge > 0 the constructor started a setInterval that was never
+        cleared. It kept the process alive forever (even for an idle queue),
+        and its closure retained the queue so it could never be garbage
+        collected. With createKeyedPromiseQueue every key got its own queue and
+        interval, so one interval accumulated per distinct key.
+
+        Move the expiry logic into a private method and start the interval
+        lazily, when a function has to wait in the queue. It is cleared as soon
+        as the queue is empty (when the last waiting function is started, or
+        the last one expired), and restarted the next time a function has to
+        wait. The 1s period, per-tick batching of the `timeout` metric and the
+        expiry comparison are unchanged.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.14
+  title: ""
+  date: 2026-11-13T13:45:30.977Z
+- commits:
     - subject: Fix createKeyedPromiseQueue with keys found on Object.prototype
       hash: 387a78082053735248a4192bc14b4eddcc585155
       body: |
