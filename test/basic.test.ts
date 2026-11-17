@@ -218,6 +218,40 @@ describe('PromiseQueue', () => {
 			expect(inFlight).to.deep.equal([1, 2, 1, 0]);
 		});
 
+		it('emits the number of waiting functions as they are queued', async () => {
+			const q = new PromiseQueue();
+			const blocker: PromiseWithResolvers<void> = Promise.withResolvers();
+			const running = q.add(() => blocker.promise);
+
+			const queueLengths: number[] = [];
+			q.metrics.on('queueLength', (n: number) => queueLengths.push(n));
+			const queued = [q.add(() => 'a'), q.add(() => 'b')];
+			expect(queueLengths).to.deep.equal([1, 2]);
+
+			blocker.resolve();
+			await Promise.all([running, ...queued]);
+		});
+
+		it('emits timeout with the number of functions that waited longer than maxAge', async () => {
+			const q = new PromiseQueue({ maxAge: 1000 });
+			let timedOut = 0;
+			q.metrics.on('timeout', (count: number) => {
+				timedOut += count;
+			});
+
+			const blocker: PromiseWithResolvers<void> = Promise.withResolvers();
+			const running = q.add(() => blocker.promise);
+			const waiting = [q.add(() => 'a'), q.add(() => 'b')];
+
+			for (const rejection of waiting) {
+				expect(await getRejection(rejection)).to.be.instanceOf(TimeoutError);
+			}
+			expect(timedOut).to.equal(2);
+
+			blocker.resolve();
+			await running;
+		});
+
 		it('emits rejection when a function is rejected for maxSize', async () => {
 			const q = new PromiseQueue({ maxSize: 1 });
 			let rejections = 0;
