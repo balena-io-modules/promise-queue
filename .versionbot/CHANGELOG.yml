@@ -1,4 +1,41 @@
 - commits:
+    - subject: Type the metrics event emitter and make it readonly
+      hash: 2972419992408a43258225d497895e2b451e2ad3
+      body: >
+        `public metrics = new EventEmitter()` is an
+
+        `EventEmitter<string | symbol, any>`: listeners receive `any` arguments,
+
+        event name typos compile, and the property can be reassigned.
+
+
+        Export a `PromiseQueueMetricsEvents` event map and type the emitter with
+
+        it (`EventEmitter<PromiseQueueMetricsEvents>`), declared readonly. No
+
+        runtime behaviour changes. The README line for `timeout` is corrected:
+        it
+
+        has always emitted the number of timed out functions.
+
+
+        Consumer impact:
+
+        - Callers that pass a `string` as the event name no longer compile. For
+          example open-balena-api does
+          `for (const cause of ['rejection', 'timeout']) pool.queue.metrics.on(cause, (count = 1) => ...)`
+          and needs `as const` on the array.
+        - `metrics` is no longer assignable to eventemitter3's default
+          `EventEmitter` (e.g. a helper taking `(emitter: EventEmitter)`); such
+          parameters need `EventEmitter<any>`.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.16
+  title: ""
+  date: 2026-11-17T02:32:57.003Z
+- commits:
     - subject: "Tests: Add tests for the `queueLength` and `timeout` metrics"
       hash: 4004e572df760009ebeeba17f6356b451ab97523
       body: |
