@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency lint-staged to v17.6.1
+      hash: f8559091f624cdda39ee75ca8264312d900a638a
+      body: |
+        Update lint-staged from 17.6.0 to 17.6.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.3.17
+  title: ""
+  date: 2026-11-21T01:09:51.419Z
+- commits:
     - subject: Type the metrics event emitter and make it readonly
       hash: 2972419992408a43258225d497895e2b451e2ad3
       body: >
