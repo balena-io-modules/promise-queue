@@ -157,8 +157,10 @@ export class PromiseQueue {
 			this.stopExpiryTimer();
 		}
 	}
-	public add<T>(fn: () => T | PromiseLike<T>): Promise<T> {
-		return new Promise<T>((resolve, reject) => {
+	public add<T>(fn: () => T | PromiseLike<T>): Promise<Awaited<T>>;
+	public add<T>(fn: () => T): Promise<Awaited<T>>;
+	public add<T>(fn: () => T | PromiseLike<T>): Promise<Awaited<T>> {
+		return new Promise<Awaited<T>>((resolve, reject) => {
 			this.metrics.emit('arrival');
 			const arrivalTime = process.hrtime();
 
@@ -216,12 +218,17 @@ export class PromiseQueue {
 	}
 }
 
+export interface KeyedPromiseQueueAdd {
+	<T>(key: string, fn: () => T | PromiseLike<T>): Promise<Awaited<T>>;
+	<T>(key: string, fn: () => T): Promise<Awaited<T>>;
+}
+
 export const createKeyedPromiseQueue = (
 	...args: ConstructorParameters<typeof PromiseQueue>
-) => {
+): KeyedPromiseQueueAdd => {
 	const queues = new Map<string, PromiseQueue>();
 
-	return <T>(key: string, fn: () => T | PromiseLike<T>): Promise<T> => {
+	return <T>(key: string, fn: () => T | PromiseLike<T>) => {
 		let queue = queues.get(key);
 		if (queue == null) {
 			queue = new PromiseQueue(...args);
