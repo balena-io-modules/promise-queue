@@ -15,7 +15,7 @@ export interface PromiseQueueMetricsEvents {
 	arrival: [];
 	/** A function is added to the waiting queue (not emitted when it is rejected for `maxSize` in fifo order) */
 	enqueue: [];
-	/** The length of the waiting queue after it changed (a function was enqueued, evicted or timed out) */
+	/** The length of the waiting queue after it changed (a function was enqueued, dequeued, evicted or timed out) */
 	queueLength: [queueLength: number];
 	/** The number of running functions, emitted whenever it changes */
 	inFlight: [inFlight: number];
@@ -147,14 +147,21 @@ export class PromiseQueue {
 			this.metrics.emit('inFlight', this.inFlight);
 			this.run();
 		};
+		let dequeued = false;
 		while (this.inFlight < this.concurrency && this.queue.length > 0) {
 			this.inFlight++;
 			this.metrics.emit('inFlight', this.inFlight);
 			const fn = this.queue[this.next]()!;
+			dequeued = true;
 			fn().then(runNext, runNext);
 		}
 		if (this.queue.length === 0) {
 			this.stopExpiryTimer();
+		}
+		// Emitted once the functions have started, so that a throwing listener
+		// can't leave a dequeued function unrun
+		if (dequeued) {
+			this.metrics.emit('queueLength', this.queue.length);
 		}
 	}
 	public add<T>(fn: () => T | PromiseLike<T>): Promise<T> {
